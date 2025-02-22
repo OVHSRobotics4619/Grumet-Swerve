@@ -13,6 +13,8 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import swervelib.parser.SwerveParser;
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import swervelib.SwerveDrive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,25 +25,31 @@ import static edu.wpi.first.units.Units.Meter;
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
 
-  
-File directory = new File(Filesystem.getDeployDirectory(),"swerve");
-SwerveDrive swerveDrive;
+  File directory = new File(Filesystem.getDeployDirectory(), "swerve");
+  SwerveDrive swerveDrive;
 
   public SwerveSubsystem() {
 
-    try
-    {
+    try {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.maxSpeed,
-                                                                  new Pose2d(new Translation2d(Meter.of(1),
-                                                                                               Meter.of(4)),
-                                                                             Rotation2d.fromDegrees(0)));
-      // Alternative method if you don't want to supply the conversion factor via JSON files.
-      // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
-    } catch (Exception e)
-  {
-    throw new RuntimeException(e);
+          new Pose2d(new Translation2d(Meter.of(1),
+              Meter.of(4)),
+              Rotation2d.fromDegrees(0)));
+
+      SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+
+      // swerveDrive = new
+      // SwerveParser(directory).createSwerveDrive(Constants.maxSpeed);
+      // Alternative method if you don't want to supply the conversion factor via JSON
+      // files.
+      // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed,
+      // angleConversionFactor, driveConversionFactor);
+
+      swerveDrive.restoreInternalOffset();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
-}
 
   /**
    * Example command factory method.
@@ -58,7 +66,8 @@ SwerveDrive swerveDrive;
   }
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
+   * An example method querying a boolean state of the subsystem (for example, a
+   * digital sensor).
    *
    * @return value of some boolean subsystem state, such as a digital sensor.
    */
@@ -78,16 +87,16 @@ SwerveDrive swerveDrive;
   }
 
   public SwerveDrive getSwerveDrive() {
-   return swerveDrive;
-}
+    return swerveDrive;
+  }
 
-public void driveFieldOriented(ChassisSpeeds velocity){
-  swerveDrive.driveFieldOriented(velocity);
-}
+  public void driveFieldOriented(ChassisSpeeds velocity) {
+    swerveDrive.driveFieldOriented(velocity);
+  }
 
-public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity){
-  return run(() -> {
-    swerveDrive.driveFieldOriented(velocity.get());
-  });
-}
+  public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity) {
+    return run(() -> {
+      swerveDrive.driveFieldOriented(velocity.get());
+    });
+  }
 }
